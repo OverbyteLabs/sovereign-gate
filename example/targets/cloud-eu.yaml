@@ -1,0 +1,8 @@
+# Passes once local and on-premise records exist: the database stays in Paris.
+name: cloud-eu
+kind: cloud
+provider: scaleway
+resources:
+  db:
+    service: managed-postgresql
+    region: fr-par

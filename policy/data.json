@@ -1,0 +1,7 @@
+{
+  "eu_regions": {
+    "aws": ["eu-central-1", "eu-west-1", "eu-west-3", "eu-south-1", "eu-south-2", "eu-north-1"],
+    "hetzner": ["fsn1", "nbg1", "hel1"],
+    "scaleway": ["fr-par", "nl-ams", "pl-waw"]
+  }
+}

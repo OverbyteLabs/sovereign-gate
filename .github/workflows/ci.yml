@@ -1,0 +1,44 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+env:
+  OPA_VERSION: v1.21.3
+  SCORE_COMPOSE_VERSION: 0.48.0
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+
+      - name: Install OPA and score-compose
+        run: |
+          mkdir -p "$HOME/bin"
+          curl -fsSL -o "$HOME/bin/opa" "https://openpolicyagent.org/downloads/${OPA_VERSION}/opa_linux_amd64_static"
+          chmod +x "$HOME/bin/opa"
+          curl -fsSL "https://github.com/score-spec/score-compose/releases/download/${SCORE_COMPOSE_VERSION}/score-compose_${SCORE_COMPOSE_VERSION}_linux_amd64.tar.gz" \
+            | tar -xz -C "$HOME/bin" score-compose
+          echo "$HOME/bin" >> "$GITHUB_PATH"
+
+      - name: Rule tests
+        run: opa test policy -v
+
+      - name: Go tests
+        run: |
+          go vet ./...
+          go test ./...
+
+      - name: Demo
+        run: test/e2e/demo.sh
+
+      - name: Quadlet units are valid
+        run: QUADLET_UNIT_DIRS="$PWD/.gate/quadlet" /usr/libexec/podman/quadlet -dryrun -user

@@ -1,0 +1,8 @@
+# Blocked: the database would live in a US region.
+name: cloud-us
+kind: cloud
+provider: aws
+resources:
+  db:
+    service: rds-postgresql
+    region: us-east-1
